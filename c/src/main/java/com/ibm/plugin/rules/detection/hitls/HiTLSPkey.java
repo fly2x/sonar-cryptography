@@ -57,7 +57,7 @@ public final class HiTLSPkey {
                     .forMethods("CRYPT_EAL_PkeyNewCtx")
                     .shouldBeDetectedAs(new ValueActionFactory<>("PKEY"))
                     .withMethodParameter("CRYPT_PKEY_AlgorithmId")
-                    .buildForContext(new KeyContext(KeyContext.Kind.NONE))
+                    .buildForContext(new KeyContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
 
@@ -96,7 +96,7 @@ public final class HiTLSPkey {
                     .shouldBeDetectedAs(new ValueActionFactory<>("KEYGEN"))
                     .withMethodParameter("CRYPT_EAL_PkeyCtx")
                     .addDependingDetectionRules(List.of(PKEY_NEW_CTX))
-                    .buildForContext(new KeyContext(KeyContext.Kind.NONE))
+                    .buildForContext(new KeyContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
 

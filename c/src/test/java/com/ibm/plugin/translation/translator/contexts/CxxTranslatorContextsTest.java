@@ -97,7 +97,7 @@ class CxxTranslatorContextsTest {
     @Test
     void testKeyKnownAlgorithms() {
         var t = new CxxKeyContextTranslator();
-        var ctx = new KeyContext(KeyContext.Kind.NONE);
+        var ctx = new KeyContext();
         for (String id :
                 List.of(
                         "CRYPT_PKEY_RSA",
