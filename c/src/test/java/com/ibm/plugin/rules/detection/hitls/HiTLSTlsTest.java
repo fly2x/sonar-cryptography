@@ -19,34 +19,33 @@
  */
 package com.ibm.plugin.rules.detection.hitls;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ibm.engine.rule.IDetectionRule;
 import com.sonar.cxx.sslr.api.AstNode;
 import java.util.List;
-import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.junit.jupiter.api.Test;
 
-/**
- * Aggregates all openHiTLS detection rules. Combines rules for message digests, symmetric ciphers,
- * MACs, public keys, key derivation functions, and random number generators.
- */
-public final class HiTLSDetectionRules {
+/** Tests for HiTLS TLS/DTLS detection rules. */
+class HiTLSTlsTest {
 
-    private HiTLSDetectionRules() {
-        // private
+    @Test
+    void testRuleCount() {
+        List<IDetectionRule<AstNode>> rules = HiTLSTls.rules();
+        // 3 rules: HITLS_CFG_NewTlsConfig, HITLS_CFG_NewDtlsConfig, HITLS_New
+        assertThat(rules).hasSize(3);
     }
 
-    @Nonnull
-    public static List<IDetectionRule<AstNode>> rules() {
-        return Stream.of(
-                        HiTLSMessageDigest.rules().stream(),
-                        HiTLSCipher.rules().stream(),
-                        HiTLSMac.rules().stream(),
-                        HiTLSPkey.rules().stream(),
-                        HiTLSKdf.rules().stream(),
-                        HiTLSRand.rules().stream(),
-                        HiTLSHpke.rules().stream(),
-                        HiTLSTls.rules().stream())
-                .flatMap(s -> s)
-                .toList();
+    @Test
+    void testAllRulesAggregated() {
+        // 8 categories: Md(1) + Cipher(1) + Mac(1) + Pkey(6) + Kdf(1) + Rand(1) + Hpke(1) + Tls(3)
+        // = 15
+        assertThat(HiTLSDetectionRules.rules()).hasSize(19);
+    }
+
+    @Test
+    void testRulesNotEmpty() {
+        assertThat(HiTLSTls.rules()).isNotEmpty();
+        HiTLSTls.rules().forEach(rule -> assertThat(rule).isNotNull());
     }
 }

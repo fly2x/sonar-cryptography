@@ -19,34 +19,40 @@
  */
 package com.ibm.plugin.rules.detection.hitls;
 
+import com.ibm.engine.model.context.PRNGContext;
+import com.ibm.engine.model.factory.ValueActionFactory;
 import com.ibm.engine.rule.IDetectionRule;
+import com.ibm.engine.rule.builder.DetectionRuleBuilder;
 import com.sonar.cxx.sslr.api.AstNode;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
- * Aggregates all openHiTLS detection rules. Combines rules for message digests, symmetric ciphers,
- * MACs, public keys, key derivation functions, and random number generators.
+ * Detection rule for openHiTLS Random API: CRYPT_EAL_RandNewCtx. Detects calls like:
+ * CRYPT_EAL_RandNewCtx(CRYPT_RAND_SHA256)
+ *
+ * <p>CRYPT_RAND_* enums include: SHA256, SHA384, SHA512, HMAC_SHA256, etc.
  */
-public final class HiTLSDetectionRules {
+@SuppressWarnings("java:S1192")
+public final class HiTLSRand {
 
-    private HiTLSDetectionRules() {
+    private HiTLSRand() {
         // private
     }
 
+    private static final IDetectionRule<AstNode> RAND_NEW_CTX =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_RandNewCtx")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("RAND"))
+                    .withMethodParameter("CRYPT_RAND_AlgId")
+                    .buildForContext(new PRNGContext())
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
     @Nonnull
     public static List<IDetectionRule<AstNode>> rules() {
-        return Stream.of(
-                        HiTLSMessageDigest.rules().stream(),
-                        HiTLSCipher.rules().stream(),
-                        HiTLSMac.rules().stream(),
-                        HiTLSPkey.rules().stream(),
-                        HiTLSKdf.rules().stream(),
-                        HiTLSRand.rules().stream(),
-                        HiTLSHpke.rules().stream(),
-                        HiTLSTls.rules().stream())
-                .flatMap(s -> s)
-                .toList();
+        return List.of(RAND_NEW_CTX);
     }
 }

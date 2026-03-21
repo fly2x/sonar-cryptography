@@ -55,11 +55,16 @@
           <scope>compile</scope>
       </dependency>
 
-      <!-- Test -->
       <dependency>
           <groupId>org.sonarsource.analyzer-commons</groupId>
           <artifactId>sonar-analyzer-test-commons</artifactId>
           <version>2.18.0.3393</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.sonarsource.sonarqube</groupId>
+          <artifactId>sonar-plugin-api-impl</artifactId>
+          <version>${sonar.version}</version>
           <scope>test</scope>
       </dependency>
   </dependencies>

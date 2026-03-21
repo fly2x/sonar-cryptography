@@ -19,7 +19,9 @@
  */
 package com.ibm.plugin.rules.detection.hitls;
 
+import com.ibm.engine.model.context.CipherContext;
 import com.ibm.engine.model.context.KeyContext;
+import com.ibm.engine.model.context.SignatureContext;
 import com.ibm.engine.model.factory.ValueActionFactory;
 import com.ibm.engine.rule.IDetectionRule;
 import com.ibm.engine.rule.builder.DetectionRuleBuilder;
@@ -34,9 +36,11 @@ import javax.annotation.Nonnull;
  *
  * <ul>
  *   <li>CRYPT_EAL_PkeyNewCtx(algorithmId) — creates a new pkey context
+ *   <li>CRYPT_EAL_PkeySign — signs data with a private key
+ *   <li>CRYPT_EAL_PkeyVerify — verifies a signature with a public key
  * </ul>
  *
- * <p>CRYPT_PKEY_* enums include: RSA, DSA, DH, ECDSA, ECDH, ED25519, X25519, SM2, PAILLIER, etc.
+ * <p>CRYPT_PKEY_* enums: RSA, DSA, DH, ECDSA, ECDH, ED25519, X25519, SM2, PAILLIER, etc.
  */
 @SuppressWarnings("java:S1192")
 public final class HiTLSPkey {
@@ -57,8 +61,68 @@ public final class HiTLSPkey {
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
 
+    /** CRYPT_EAL_PkeySign — signs data using private key. */
+    private static final IDetectionRule<AstNode> PKEY_SIGN =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_PkeySign")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("SIGN"))
+                    .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .buildForContext(new SignatureContext())
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
+    /** CRYPT_EAL_PkeyVerify — verifies a signature. */
+    private static final IDetectionRule<AstNode> PKEY_VERIFY =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_PkeyVerify")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("VERIFY"))
+                    .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .buildForContext(new SignatureContext())
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
+    /** CRYPT_EAL_PkeyGen — generates a key pair. */
+    private static final IDetectionRule<AstNode> PKEY_GEN =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_PkeyGen")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("KEYGEN"))
+                    .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .buildForContext(new KeyContext(KeyContext.Kind.NONE))
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
+    /** CRYPT_EAL_PkeyEncrypt — encrypts data with public key. */
+    private static final IDetectionRule<AstNode> PKEY_ENCRYPT =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_PkeyEncrypt")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("ENCRYPT"))
+                    .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .buildForContext(new CipherContext())
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
+    /** CRYPT_EAL_PkeyDecrypt — decrypts data with private key. */
+    private static final IDetectionRule<AstNode> PKEY_DECRYPT =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_PkeyDecrypt")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("DECRYPT"))
+                    .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .buildForContext(new CipherContext())
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
     @Nonnull
     public static List<IDetectionRule<AstNode>> rules() {
-        return List.of(PKEY_NEW_CTX);
+        return List.of(PKEY_NEW_CTX, PKEY_SIGN, PKEY_VERIFY, PKEY_GEN, PKEY_ENCRYPT, PKEY_DECRYPT);
     }
 }

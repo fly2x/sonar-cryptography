@@ -24,14 +24,25 @@ import com.ibm.engine.model.IValue;
 import com.ibm.engine.model.context.CipherContext;
 import com.ibm.engine.model.context.DigestContext;
 import com.ibm.engine.model.context.IDetectionContext;
+import com.ibm.engine.model.context.KeyAgreementContext;
 import com.ibm.engine.model.context.KeyContext;
+import com.ibm.engine.model.context.KeyDerivationFunctionContext;
+import com.ibm.engine.model.context.PRNGContext;
+import com.ibm.engine.model.context.ProtocolContext;
+import com.ibm.engine.model.context.SignatureContext;
 import com.ibm.engine.rule.IBundle;
 import com.ibm.mapper.ITranslator;
 import com.ibm.mapper.model.INode;
 import com.ibm.mapper.utils.DetectionLocation;
 import com.ibm.plugin.translation.translator.contexts.CxxCipherContextTranslator;
 import com.ibm.plugin.translation.translator.contexts.CxxDigestContextTranslator;
+import com.ibm.plugin.translation.translator.contexts.CxxHpkeContextTranslator;
+import com.ibm.plugin.translation.translator.contexts.CxxKdfContextTranslator;
+import com.ibm.plugin.translation.translator.contexts.CxxKeyAgreementContextTranslator;
 import com.ibm.plugin.translation.translator.contexts.CxxKeyContextTranslator;
+import com.ibm.plugin.translation.translator.contexts.CxxPRNGContextTranslator;
+import com.ibm.plugin.translation.translator.contexts.CxxProtocolContextTranslator;
+import com.ibm.plugin.translation.translator.contexts.CxxSignatureContextTranslator;
 import com.sonar.cxx.sslr.api.AstNode;
 import com.sonar.cxx.sslr.api.Grammar;
 import java.util.List;
@@ -74,6 +85,15 @@ public class CxxTranslator
         }
 
         if (detectionValueContext.is(CipherContext.class)) {
+            // Try HPKE translator first (HPKE uses CipherContext)
+            final CxxHpkeContextTranslator hpkeTranslator = new CxxHpkeContextTranslator();
+            Optional<INode> hpkeResult =
+                    hpkeTranslator.translate(
+                            bundleIdentifier, value, detectionValueContext, detectionLocation);
+            if (hpkeResult.isPresent()) {
+                return hpkeResult;
+            }
+            // Fall back to generic cipher translator
             final CxxCipherContextTranslator cipherTranslator = new CxxCipherContextTranslator();
             return cipherTranslator.translate(
                     bundleIdentifier, value, detectionValueContext, detectionLocation);
@@ -82,6 +102,38 @@ public class CxxTranslator
         if (detectionValueContext.is(KeyContext.class)) {
             final CxxKeyContextTranslator keyTranslator = new CxxKeyContextTranslator();
             return keyTranslator.translate(
+                    bundleIdentifier, value, detectionValueContext, detectionLocation);
+        }
+
+        if (detectionValueContext.is(SignatureContext.class)) {
+            final CxxSignatureContextTranslator sigTranslator = new CxxSignatureContextTranslator();
+            return sigTranslator.translate(
+                    bundleIdentifier, value, detectionValueContext, detectionLocation);
+        }
+
+        if (detectionValueContext.is(KeyDerivationFunctionContext.class)) {
+            final CxxKdfContextTranslator kdfTranslator = new CxxKdfContextTranslator();
+            return kdfTranslator.translate(
+                    bundleIdentifier, value, detectionValueContext, detectionLocation);
+        }
+
+        if (detectionValueContext.is(PRNGContext.class)) {
+            final CxxPRNGContextTranslator prngTranslator = new CxxPRNGContextTranslator();
+            return prngTranslator.translate(
+                    bundleIdentifier, value, detectionValueContext, detectionLocation);
+        }
+
+        if (detectionValueContext.is(ProtocolContext.class)) {
+            final CxxProtocolContextTranslator protocolTranslator =
+                    new CxxProtocolContextTranslator();
+            return protocolTranslator.translate(
+                    bundleIdentifier, value, detectionValueContext, detectionLocation);
+        }
+
+        if (detectionValueContext.is(KeyAgreementContext.class)) {
+            final CxxKeyAgreementContextTranslator kaTranslator =
+                    new CxxKeyAgreementContextTranslator();
+            return kaTranslator.translate(
                     bundleIdentifier, value, detectionValueContext, detectionLocation);
         }
 

@@ -19,21 +19,54 @@
  */
 package com.ibm.plugin.translation.reorganizer;
 
+import com.ibm.mapper.model.PublicKeyEncryption;
+import com.ibm.mapper.model.Signature;
+import com.ibm.mapper.model.functionality.Sign;
+import com.ibm.mapper.model.functionality.Verify;
 import com.ibm.mapper.reorganizer.IReorganizerRule;
-import java.util.Collections;
+import com.ibm.mapper.reorganizer.UsualPerformActions;
+import com.ibm.mapper.reorganizer.builder.ReorganizerRuleBuilder;
+import com.ibm.mapper.reorganizer.rules.SignatureReorganizer;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
- * Reorganizer rules for C/C++ translations. Initially empty — can be extended as we add more
- * complex translation patterns.
+ * Reorganizer rules for C/C++ translations. Adapted from Go reorganizer rules for relevant
+ * openHiTLS patterns.
  */
 public final class CxxReorganizerRules {
 
     private CxxReorganizerRules() {}
 
+    /** Merge parent and child PKE nodes of the same kind. */
+    private static final IReorganizerRule MERGE_PKE_PARENT_AND_CHILD =
+            new ReorganizerRuleBuilder()
+                    .createReorganizerRule("MERGE_PKE_PARENT_AND_CHILD")
+                    .forNodeKind(PublicKeyEncryption.class)
+                    .withDetectionCondition(
+                            (node, parent, roots) ->
+                                    node.hasChildOfType(PublicKeyEncryption.class).isPresent())
+                    .perform(
+                            UsualPerformActions.performMergeParentAndChildOfSameKind(
+                                    PublicKeyEncryption.class));
+
     @Nonnull
     public static List<IReorganizerRule> rules() {
-        return Collections.emptyList();
+        return Stream.of(
+                        SignatureReorganizer.moveFunctionalityUnderChildNode(
+                                Sign.class, Signature.class),
+                        SignatureReorganizer.moveFunctionalityUnderChildNode(
+                                Verify.class, Signature.class),
+                        SignatureReorganizer.moveNodesFromUnderFunctionalityUnderNode(
+                                Sign.class, PublicKeyEncryption.class),
+                        SignatureReorganizer.moveNodesFromUnderFunctionalityUnderNode(
+                                Sign.class, Signature.class),
+                        SignatureReorganizer.moveNodesFromUnderFunctionalityUnderNode(
+                                Verify.class, Signature.class),
+                        SignatureReorganizer.MERGE_SIGNATURE_PARENT_AND_CHILD,
+                        SignatureReorganizer.MERGE_SIGNATURE_WITH_PKE_UNDER_PRIVATE_KEY,
+                        MERGE_PKE_PARENT_AND_CHILD)
+                .toList();
     }
 }

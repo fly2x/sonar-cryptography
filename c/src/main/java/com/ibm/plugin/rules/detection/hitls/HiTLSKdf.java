@@ -19,34 +19,40 @@
  */
 package com.ibm.plugin.rules.detection.hitls;
 
+import com.ibm.engine.model.context.KeyDerivationFunctionContext;
+import com.ibm.engine.model.factory.ValueActionFactory;
 import com.ibm.engine.rule.IDetectionRule;
+import com.ibm.engine.rule.builder.DetectionRuleBuilder;
 import com.sonar.cxx.sslr.api.AstNode;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
- * Aggregates all openHiTLS detection rules. Combines rules for message digests, symmetric ciphers,
- * MACs, public keys, key derivation functions, and random number generators.
+ * Detection rule for openHiTLS KDF API: CRYPT_EAL_KdfNewCtx. Detects calls like:
+ * CRYPT_EAL_KdfNewCtx(CRYPT_KDF_SCRYPT)
+ *
+ * <p>CRYPT_KDF_* enums include: SCRYPT, PBKDF2, KDFTLS12, HKDF.
  */
-public final class HiTLSDetectionRules {
+@SuppressWarnings("java:S1192")
+public final class HiTLSKdf {
 
-    private HiTLSDetectionRules() {
+    private HiTLSKdf() {
         // private
     }
 
+    private static final IDetectionRule<AstNode> KDF_NEW_CTX =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_KdfNewCtx")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("KDF"))
+                    .withMethodParameter("CRYPT_KDF_AlgId")
+                    .buildForContext(new KeyDerivationFunctionContext())
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
     @Nonnull
     public static List<IDetectionRule<AstNode>> rules() {
-        return Stream.of(
-                        HiTLSMessageDigest.rules().stream(),
-                        HiTLSCipher.rules().stream(),
-                        HiTLSMac.rules().stream(),
-                        HiTLSPkey.rules().stream(),
-                        HiTLSKdf.rules().stream(),
-                        HiTLSRand.rules().stream(),
-                        HiTLSHpke.rules().stream(),
-                        HiTLSTls.rules().stream())
-                .flatMap(s -> s)
-                .toList();
+        return List.of(KDF_NEW_CTX);
     }
 }
