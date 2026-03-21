@@ -54,7 +54,7 @@ class HiTLSRandTest extends CxxTestBase {
     @Test
     void testAllRulesAggregated() {
         // 6 categories: Md(1) + Cipher(1) + Mac(1) + Pkey(3) + Kdf(1) + Rand(1) = 8
-        assertThat(HiTLSDetectionRules.rules()).hasSize(30);
+        assertThat(HiTLSDetectionRules.rules()).hasSize(35);
     }
 
     @Override

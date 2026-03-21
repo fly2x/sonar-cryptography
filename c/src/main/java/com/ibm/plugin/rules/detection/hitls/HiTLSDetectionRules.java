@@ -49,7 +49,8 @@ public final class HiTLSDetectionRules {
                         HiTLSKdfOps.rules().stream(),
                         HiTLSRand.rules().stream(),
                         HiTLSHpke.rules().stream(),
-                        HiTLSTls.rules().stream())
+                        HiTLSTls.rules().stream(),
+                        HiTLSTlsOps.rules().stream())
                 .flatMap(s -> s)
                 .toList();
     }

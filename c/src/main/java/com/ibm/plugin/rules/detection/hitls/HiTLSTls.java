@@ -45,7 +45,7 @@ public final class HiTLSTls {
         // private
     }
 
-    private static final IDetectionRule<AstNode> TLS_CONFIG =
+    static final IDetectionRule<AstNode> TLS_CONFIG =
             new DetectionRuleBuilder<AstNode>()
                     .createDetectionRule()
                     .forObjectTypes("")
@@ -56,7 +56,7 @@ public final class HiTLSTls {
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
 
-    private static final IDetectionRule<AstNode> DTLS_CONFIG =
+    static final IDetectionRule<AstNode> DTLS_CONFIG =
             new DetectionRuleBuilder<AstNode>()
                     .createDetectionRule()
                     .forObjectTypes("")
@@ -67,13 +67,14 @@ public final class HiTLSTls {
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
 
-    private static final IDetectionRule<AstNode> HITLS_NEW =
+    static final IDetectionRule<AstNode> HITLS_NEW =
             new DetectionRuleBuilder<AstNode>()
                     .createDetectionRule()
                     .forObjectTypes("")
                     .forMethods("HITLS_New")
                     .shouldBeDetectedAs(new ValueActionFactory<>("HITLS"))
                     .withMethodParameter("HITLS_Config")
+                    .addDependingDetectionRules(List.of(TLS_CONFIG, DTLS_CONFIG))
                     .buildForContext(new ProtocolContext(ProtocolContext.Kind.TLS))
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
