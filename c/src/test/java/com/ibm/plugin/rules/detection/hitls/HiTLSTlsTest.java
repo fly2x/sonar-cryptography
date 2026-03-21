@@ -40,7 +40,7 @@ class HiTLSTlsTest {
     void testAllRulesAggregated() {
         // 8 categories: Md(1) + Cipher(1) + Mac(1) + Pkey(6) + Kdf(1) + Rand(1) + Hpke(1) + Tls(3)
         // = 15
-        assertThat(HiTLSDetectionRules.rules()).hasSize(19);
+        assertThat(HiTLSDetectionRules.rules()).hasSize(25);
     }
 
     @Test

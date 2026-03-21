@@ -52,7 +52,7 @@ public final class HiTLSMessageDigest {
      * CRYPT_EAL_MdNewCtx(CRYPT_MD_AlgorithmId id) Creates a new message digest context for the
      * specified algorithm.
      */
-    private static final IDetectionRule<AstNode> MD_NEW_CTX =
+    static final IDetectionRule<AstNode> MD_NEW_CTX =
             new DetectionRuleBuilder<AstNode>()
                     .createDetectionRule()
                     .forObjectTypes("") // C global function: empty type

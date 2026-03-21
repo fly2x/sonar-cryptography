@@ -69,6 +69,7 @@ public final class HiTLSPkey {
                     .forMethods("CRYPT_EAL_PkeySign")
                     .shouldBeDetectedAs(new ValueActionFactory<>("SIGN"))
                     .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .addDependingDetectionRules(List.of(PKEY_NEW_CTX))
                     .buildForContext(new SignatureContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
@@ -81,6 +82,7 @@ public final class HiTLSPkey {
                     .forMethods("CRYPT_EAL_PkeyVerify")
                     .shouldBeDetectedAs(new ValueActionFactory<>("VERIFY"))
                     .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .addDependingDetectionRules(List.of(PKEY_NEW_CTX))
                     .buildForContext(new SignatureContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
@@ -93,6 +95,7 @@ public final class HiTLSPkey {
                     .forMethods("CRYPT_EAL_PkeyGen")
                     .shouldBeDetectedAs(new ValueActionFactory<>("KEYGEN"))
                     .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .addDependingDetectionRules(List.of(PKEY_NEW_CTX))
                     .buildForContext(new KeyContext(KeyContext.Kind.NONE))
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
@@ -105,6 +108,7 @@ public final class HiTLSPkey {
                     .forMethods("CRYPT_EAL_PkeyEncrypt")
                     .shouldBeDetectedAs(new ValueActionFactory<>("ENCRYPT"))
                     .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .addDependingDetectionRules(List.of(PKEY_NEW_CTX))
                     .buildForContext(new CipherContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
@@ -117,6 +121,7 @@ public final class HiTLSPkey {
                     .forMethods("CRYPT_EAL_PkeyDecrypt")
                     .shouldBeDetectedAs(new ValueActionFactory<>("DECRYPT"))
                     .withMethodParameter("CRYPT_EAL_PkeyCtx")
+                    .addDependingDetectionRules(List.of(PKEY_NEW_CTX))
                     .buildForContext(new CipherContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();

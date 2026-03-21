@@ -39,7 +39,9 @@ public final class HiTLSDetectionRules {
     public static List<IDetectionRule<AstNode>> rules() {
         return Stream.of(
                         HiTLSMessageDigest.rules().stream(),
+                        HiTLSMdOps.rules().stream(),
                         HiTLSCipher.rules().stream(),
+                        HiTLSCipherOps.rules().stream(),
                         HiTLSMac.rules().stream(),
                         HiTLSPkey.rules().stream(),
                         HiTLSKdf.rules().stream(),

@@ -67,6 +67,7 @@ public final class HiTLSHpke {
                     .forMethods("CRYPT_EAL_HpkeSetupBaseS")
                     .shouldBeDetectedAs(new ValueActionFactory<>("SETUP_BASE_S"))
                     .withMethodParameter("CRYPT_EAL_HpkeCtx")
+                    .addDependingDetectionRules(List.of(HPKE_NEW_CTX))
                     .buildForContext(new CipherContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
@@ -79,6 +80,7 @@ public final class HiTLSHpke {
                     .forMethods("CRYPT_EAL_HpkeSetupBaseR")
                     .shouldBeDetectedAs(new ValueActionFactory<>("SETUP_BASE_R"))
                     .withMethodParameter("CRYPT_EAL_HpkeCtx")
+                    .addDependingDetectionRules(List.of(HPKE_NEW_CTX))
                     .buildForContext(new CipherContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
@@ -91,6 +93,7 @@ public final class HiTLSHpke {
                     .forMethods("CRYPT_EAL_HpkeSeal")
                     .shouldBeDetectedAs(new ValueActionFactory<>("SEAL"))
                     .withMethodParameter("CRYPT_EAL_HpkeCtx")
+                    .addDependingDetectionRules(List.of(HPKE_NEW_CTX))
                     .buildForContext(new CipherContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
@@ -103,6 +106,7 @@ public final class HiTLSHpke {
                     .forMethods("CRYPT_EAL_HpkeOpen")
                     .shouldBeDetectedAs(new ValueActionFactory<>("OPEN"))
                     .withMethodParameter("CRYPT_EAL_HpkeCtx")
+                    .addDependingDetectionRules(List.of(HPKE_NEW_CTX))
                     .buildForContext(new CipherContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();

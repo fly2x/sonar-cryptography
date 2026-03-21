@@ -50,7 +50,7 @@ public final class HiTLSCipher {
     /**
      * CRYPT_EAL_CipherNewCtx(CRYPT_CIPHER_AlgorithmId id) Creates a new symmetric cipher context.
      */
-    private static final IDetectionRule<AstNode> CIPHER_NEW_CTX =
+    static final IDetectionRule<AstNode> CIPHER_NEW_CTX =
             new DetectionRuleBuilder<AstNode>()
                     .createDetectionRule()
                     .forObjectTypes("")
