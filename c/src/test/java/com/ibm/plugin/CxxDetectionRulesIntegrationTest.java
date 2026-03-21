@@ -34,7 +34,7 @@ class CxxDetectionRulesIntegrationTest {
     @Test
     void testHiTLSDetectionRulesContainAllCategories() {
         // 6 categories: Md(1) + Cipher(1) + Mac(1) + Pkey(3) + Kdf(1) + Rand(1) = 8
-        assertThat(HiTLSDetectionRules.rules()).hasSize(25);
+        assertThat(HiTLSDetectionRules.rules()).hasSize(30);
     }
 
     @Test

@@ -40,7 +40,7 @@ public final class HiTLSKdf {
         // private
     }
 
-    private static final IDetectionRule<AstNode> KDF_NEW_CTX =
+    static final IDetectionRule<AstNode> KDF_NEW_CTX =
             new DetectionRuleBuilder<AstNode>()
                     .createDetectionRule()
                     .forObjectTypes("")

@@ -54,7 +54,7 @@ class HiTLSHpkeTest extends CxxTestBase {
     @Test
     void testAllRulesAggregated() {
         // 7 categories: Md(1)+Cipher(1)+Mac(1)+Pkey(3)+Kdf(1)+Rand(1)+Hpke(1) = 9
-        assertThat(HiTLSDetectionRules.rules()).hasSize(25);
+        assertThat(HiTLSDetectionRules.rules()).hasSize(30);
     }
 
     @Override

@@ -19,7 +19,7 @@
  */
 package com.ibm.plugin.rules.detection.hitls;
 
-import com.ibm.engine.model.context.DigestContext;
+import com.ibm.engine.model.context.KeyDerivationFunctionContext;
 import com.ibm.engine.model.factory.ValueActionFactory;
 import com.ibm.engine.rule.IDetectionRule;
 import com.ibm.engine.rule.builder.DetectionRuleBuilder;
@@ -28,39 +28,48 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * Detection rules for openHiTLS MAC (Message Authentication Code) API.
+ * Detection rules for openHiTLS KDF operations that chain to {@link HiTLSKdf#KDF_NEW_CTX}.
  *
- * <p>Detects usage of:
+ * <p>Detects:
  *
  * <ul>
- *   <li>CRYPT_EAL_MacNewCtx(algorithmId) — creates a new MAC context
+ *   <li>CRYPT_EAL_KdfSetParam — set KDF parameters (salt, password, etc.)
+ *   <li>CRYPT_EAL_KdfDerive — derive key material
  * </ul>
- *
- * <p>CRYPT_MAC_* enums include: HMAC_MD5, HMAC_SHA1, HMAC_SHA224, HMAC_SHA256, HMAC_SHA384,
- * HMAC_SHA512, HMAC_SHA3_224, HMAC_SHA3_256, HMAC_SHA3_384, HMAC_SHA3_512, HMAC_SM3, CMAC_AES128,
- * CMAC_AES256, etc.
  */
 @SuppressWarnings("java:S1192")
-public final class HiTLSMac {
+public final class HiTLSKdfOps {
 
-    private HiTLSMac() {
+    private HiTLSKdfOps() {
         // private
     }
 
-    /** CRYPT_EAL_MacNewCtx(CRYPT_MAC_AlgorithmId id) Creates a new MAC context. */
-    static final IDetectionRule<AstNode> MAC_NEW_CTX =
+    private static final IDetectionRule<AstNode> KDF_SET_PARAM =
             new DetectionRuleBuilder<AstNode>()
                     .createDetectionRule()
                     .forObjectTypes("")
-                    .forMethods("CRYPT_EAL_MacNewCtx")
-                    .shouldBeDetectedAs(new ValueActionFactory<>("MAC"))
-                    .withMethodParameter("CRYPT_MAC_AlgorithmId")
-                    .buildForContext(new DigestContext())
+                    .forMethods("CRYPT_EAL_KdfSetParam")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("KDF_SET_PARAM"))
+                    .withMethodParameter("CRYPT_EAL_KdfCTX")
+                    .addDependingDetectionRules(List.of(HiTLSKdf.KDF_NEW_CTX))
+                    .buildForContext(new KeyDerivationFunctionContext())
+                    .inBundle(() -> "OpenHiTLS")
+                    .withoutDependingDetectionRules();
+
+    private static final IDetectionRule<AstNode> KDF_DERIVE =
+            new DetectionRuleBuilder<AstNode>()
+                    .createDetectionRule()
+                    .forObjectTypes("")
+                    .forMethods("CRYPT_EAL_KdfDerive")
+                    .shouldBeDetectedAs(new ValueActionFactory<>("KDF_DERIVE"))
+                    .withMethodParameter("CRYPT_EAL_KdfCTX")
+                    .addDependingDetectionRules(List.of(HiTLSKdf.KDF_NEW_CTX))
+                    .buildForContext(new KeyDerivationFunctionContext())
                     .inBundle(() -> "OpenHiTLS")
                     .withoutDependingDetectionRules();
 
     @Nonnull
     public static List<IDetectionRule<AstNode>> rules() {
-        return List.of(MAC_NEW_CTX);
+        return List.of(KDF_SET_PARAM, KDF_DERIVE);
     }
 }

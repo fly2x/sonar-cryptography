@@ -43,8 +43,10 @@ public final class HiTLSDetectionRules {
                         HiTLSCipher.rules().stream(),
                         HiTLSCipherOps.rules().stream(),
                         HiTLSMac.rules().stream(),
+                        HiTLSMacOps.rules().stream(),
                         HiTLSPkey.rules().stream(),
                         HiTLSKdf.rules().stream(),
+                        HiTLSKdfOps.rules().stream(),
                         HiTLSRand.rules().stream(),
                         HiTLSHpke.rules().stream(),
                         HiTLSTls.rules().stream())
