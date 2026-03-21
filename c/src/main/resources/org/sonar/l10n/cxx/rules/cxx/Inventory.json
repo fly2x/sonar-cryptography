@@ -1,0 +1,1 @@
+{"title":"Cryptographic Inventory","type":"CODE_SMELL","status":"ready","remediation":{"func":"Constant/Issue","constantCost":"0min"},"tags":["crypto"],"defaultSeverity":"INFO","ruleSpecification":"Inventory","sqKey":"Inventory","scope":"Main"}
